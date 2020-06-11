@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.thevinesh.mediaplayer.videofeed.MainVm" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".videofeed.MainActivity">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/videoList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:data="@{vm.data}"
+            app:layoutManager="LinearLayoutManager"
+            app:snap="@{true}"
+            app:viewBinder="@{vm.viewBinder}"
+            app:viewProvider="@{vm.viewProvider}"
+            tools:listitem="@layout/item_video" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

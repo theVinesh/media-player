@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Media Player</string>
+    <string name="media_empty">Its Empty</string>
+    <string name="something_wrong">Something\'s Wrong</string>
+    <string name="req_permission_message">I need your permission to scan for video files</string>
+    <string name="grant_and_proceed">Grant and Proceed</string>
+    <string name="scanning">Scanning</string>
+</resources>
