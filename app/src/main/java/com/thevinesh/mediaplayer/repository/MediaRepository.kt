@@ -16,7 +16,9 @@ class MediaRepository(private val context: Context) : IMediaRepository {
         emit(Loading())
         val projection = arrayOf(
             MediaStore.Video.VideoColumns._ID,
-            MediaStore.Video.VideoColumns.DISPLAY_NAME
+            MediaStore.Video.VideoColumns.DISPLAY_NAME,
+            MediaStore.Video.VideoColumns.HEIGHT,
+            MediaStore.Video.VideoColumns.WIDTH
         )
         val sortOrder = "${MediaStore.Video.VideoColumns.DATE_MODIFIED} DESC"
 
@@ -28,19 +30,23 @@ class MediaRepository(private val context: Context) : IMediaRepository {
                     val videos = mutableListOf<Video>()
 
                     val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.VideoColumns._ID)
+                    val heightColumn =
+                        cursor.getColumnIndexOrThrow(MediaStore.Video.VideoColumns.HEIGHT)
+                    val widthColumn =
+                        cursor.getColumnIndexOrThrow(MediaStore.Video.VideoColumns.WIDTH)
                     val nameColumn =
                         cursor.getColumnIndexOrThrow(MediaStore.Video.VideoColumns.DISPLAY_NAME)
 
                     while (cursor.moveToNext()) {
                         val id = cursor.getLong(idColumn)
-                        val uri =
-                            ContentUris.withAppendedId(
-                                MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-                                id
-                            )
+                        val uri = ContentUris.withAppendedId(
+                            MediaStore.Video.Media.EXTERNAL_CONTENT_URI, id
+                        )
+                        val width = cursor.getInt(widthColumn)
+                        val height = cursor.getInt(heightColumn)
 
                         val name = cursor.getString(nameColumn)
-                        videos.add(Video(id, uri, name))
+                        videos.add(Video(id, uri, width, height, name))
                     }
                     if (videos.isNotEmpty()) {
 

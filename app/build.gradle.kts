@@ -54,7 +54,6 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.11.0")
 
     implementation("com.google.android.exoplayer:exoplayer-core:2.9.0")
-    implementation("com.google.android.exoplayer:exoplayer-ui:2.9.0")
 
     val koinVersion = "2.1.5"
     implementation("org.koin:koin-core:$koinVersion")

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -8,20 +10,30 @@
             type="com.thevinesh.mediaplayer.videofeed.MainVm" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/black"
         tools:context=".videofeed.MainActivity">
 
-        <androidx.recyclerview.widget.RecyclerView
+        <SurfaceView
+            android:id="@+id/playerView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:height="@{vm.currentVideo.height}"
+            app:layout_constraintBottom_toBottomOf="@+id/videoList"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:width="@{vm.currentVideo.width}"
+            tools:layout_constraintDimensionRatio="1" />
+
+        <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/videoList"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            app:data="@{vm.data}"
-            app:layoutManager="LinearLayoutManager"
-            app:snap="@{true}"
+            app:data="@{vm.videos}"
             app:viewBinder="@{vm.viewBinder}"
             app:viewProvider="@{vm.viewProvider}"
             tools:listitem="@layout/item_video" />

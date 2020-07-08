@@ -2,16 +2,19 @@ package com.thevinesh.mediaplayer.videofeed
 
 import android.Manifest
 import androidx.databinding.ObservableArrayList
+import androidx.databinding.ObservableField
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.viewpager2.widget.ViewPager2
 import com.thevinesh.mediaplayer.BR
 import com.thevinesh.mediaplayer.R
-import com.thevinesh.mediaplayer.util.permissionhelper.IPermissionHelper
 import com.thevinesh.mediaplayer.recyclerview.ViewProvider
 import com.thevinesh.mediaplayer.recyclerview.viewBinder
 import com.thevinesh.mediaplayer.recyclerview.viewProvider
 import com.thevinesh.mediaplayer.repository.IMediaRepository
 import com.thevinesh.mediaplayer.repository.MediaRepository.State.*
+import com.thevinesh.mediaplayer.util.displayservice.IDisplayService
+import com.thevinesh.mediaplayer.util.permissionhelper.IPermissionHelper
 import com.thevinesh.mediaplayer.util.resourceservice.IResourceService
 import com.thevinesh.mediaplayer.videofeed.playerhelper.IPlayerHelper
 import kotlinx.coroutines.flow.collect
@@ -21,10 +24,14 @@ class MainVm(
     private val repository: IMediaRepository,
     private val permissionHelper: IPermissionHelper,
     private val playerHelper: IPlayerHelper,
-    private val resourceService: IResourceService
+    private val resourceService: IResourceService,
+    private val displayService: IDisplayService
 ) : ViewModel() {
 
-    val data = ObservableArrayList<ViewModel>()
+    var currentItem = 0
+    val currentVideo = ObservableField<VideoVm>()
+    val videos = ObservableArrayList<ViewModel>()
+
     val viewProvider = viewProvider {
         when (it) {
             is VideoVm -> R.layout.item_video
@@ -32,6 +39,7 @@ class MainVm(
             else -> ViewProvider.NULL_VIEW
         }
     }
+
     val viewBinder = viewBinder { viewModel, binding ->
         binding.setVariable(BR.vm, viewModel)
     }
@@ -46,11 +54,20 @@ class MainVm(
         refresh()
     }
 
-    fun releaseAllPlayers() {
-        data.forEach {
-            if (it is VideoVm) {
-                it.release()
+    val onScrollListener = object : ViewPager2.OnPageChangeCallback() {
+        override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPx: Int) {
+           /* if (positionOffsetPx >= (displayService.getScreenHeight() / 2)){
+                currentVideo.get()?.stop()
+            }*/
+        }
+
+        override fun onPageSelected(position: Int) {
+            val nextVideo = videos[position]
+            if (nextVideo is VideoVm) {
+                currentVideo.set(nextVideo)
+                nextVideo.play()
             }
+            currentItem = position
         }
     }
 
@@ -63,7 +80,7 @@ class MainVm(
                             MessageVm(resourceService.getString(R.string.scanning))
                         )
                         is Success -> clearAndAddAll(
-                            state.videos.map { VideoVm(it, playerHelper) }
+                            state.videos.map { VideoVm(it, playerHelper, displayService) }
                         )
                         is Message -> clearAndAdd(
                             MessageVm(state.message)
@@ -76,6 +93,14 @@ class MainVm(
                 requestPermissionMessageVm
             )
         }
+    }
+
+    fun onResume() {
+        currentVideo.get()?.play()
+    }
+
+    fun onPause() {
+        playerHelper.stop()
     }
 
     fun onRequestPermissionsResult(requestCode: Int, grantResults: IntArray) {
@@ -93,17 +118,17 @@ class MainVm(
     }
 
     private fun clearAndAddAll(vms: List<ViewModel>) {
-        data.clear()
-        data.addAll(vms)
+        videos.clear()
+        videos.addAll(vms)
     }
 
     private fun clearAndAdd(vm: ViewModel) {
-        data.clear()
-        data.add(vm)
+        videos.clear()
+        videos.add(vm)
     }
 
     override fun onCleared() {
         super.onCleared()
-        releaseAllPlayers()
+        playerHelper.release()
     }
 }

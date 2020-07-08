@@ -14,32 +14,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <FrameLayout
+        <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:onClick="@{() -> vm.play(playerView)}"
-            app:visibleOrGone="@{vm.showThumb}">
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                app:thumb="@{vm.contentUri}"
-                tools:src="@drawable/ic_launcher_background" />
-
-            <ImageView
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_gravity="center"
-                android:src="@drawable/exo_icon_play" />
-        </FrameLayout>
-
-
-        <com.google.android.exoplayer2.ui.PlayerView
-            android:id="@+id/playerView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:visibleOrGone="@{!vm.showThumb}" />
+            android:onClick="@{() -> vm.play()}"
+            android:scaleType="centerCrop"
+            app:thumb="@{vm.contentUri}"
+            app:visibleOrGone="@{vm.showThumb}"
+            tools:src="@drawable/ic_launcher_background" />
 
         <TextView
             android:id="@+id/textView"
